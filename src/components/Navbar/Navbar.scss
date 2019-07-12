@@ -1,0 +1,27 @@
+@import "../../styles/variables";
+
+.nav {
+  background-color: transparent;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08), 0 0 1px rgba(1,0,0,.1);
+  height: 60px;
+  color: #FFFFFF;
+  display: flex;
+  justify-content: center;
+  &__content {
+    max-width: $page-content-width;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 $page-padding;
+    //position: fixed;
+    z-index: 1;
+  }
+  &__search-form {
+    width: 30%;
+    max-width: 500px;
+    display: flex;
+    align-items: center;
+    z-index: 1;
+  }
+}
