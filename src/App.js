@@ -6,7 +6,9 @@ import './styles/base.scss'
 
 import {Navbar} from "./components/Navbar";
 import {Home} from "./components/Home";
+import {FavouriteCity} from "./components/FavouriteCity";
 import {Search} from "./components/Search";
+import {Weather5days} from "./components/Weather5days";
 
 export default class App extends React.Component {
     constructor(props) {
@@ -23,8 +25,11 @@ export default class App extends React.Component {
                 <Router>
                     <Navbar onSearch={this.searchHandler}/>
                     <Switch>
-                        <Route exact={true} path="/" component={Home}/>
-                        <Route path="/search/:queryString" component={Search}/>
+                        <Route path="/main" component={Home}/>
+                        {/*<Route exact={true} path="/main/:queryString" component={Home}/>*/}
+                        {/*<Route path="/search/:queryString" component={Search}/>*/}
+                        {/*<Route path="/weather5days/:queryString" component={Weather5days}/>*/}
+                        {/*<Route path="/favourite-city/:queryString" component={FavouriteCity}/>*/}
                         <Route path="/about" component={() => {
                             return <h2>About page</h2>
                         }}

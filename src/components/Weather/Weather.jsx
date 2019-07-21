@@ -8,18 +8,22 @@ import weatherIcons from "./icons.js";
 export class Weather extends React.Component {
     constructor(props) {
         super(props);
+        console.log(props);
         this.state = {
             weatherData: {},
+            cityName: "",
+            favourite: this.props.favourite
         };
         this.renderCityWeather = this.renderCityWeather.bind(this);
     }
 
     renderCityWeather(weatherData) {
-        console.log(weatherData);
         let prefix = 'wi wi-';
         let weatherClass = "";
         if (weatherData && weatherData.weather) {
-            let code = weatherData.weather[0].id;
+            const cityName = weatherData.name;
+            // this.setState({cityName: cityName});
+            const code = weatherData.weather[0].id;
             // / If we are not in the ranges mentioned above, add a day/night prefix.
             let icon = weatherIcons[code].icon;
             if (!(code > 699 && code < 800) && !(code > 899 && code < 1000)) {
@@ -30,17 +34,23 @@ export class Weather extends React.Component {
                 <div>
                     <i className={weatherClass}></i>
                     <h2> {weatherData.name}</h2>
+                    <h2> {weatherData.main.temp}</h2>
+                    <h2> {weatherData.main.pressure}</h2>
                     <h2> {weatherData.main.grnd_level}</h2>
                     <h2> {weatherData.main.sea_level}</h2>
                     <h2> {weatherData.main.humidity}</h2>
-                    <h2> {weatherData.main.pressure}</h2>
-                    <h2> {weatherData.main.temp}</h2>
                 </div>
-                // Finally tack on the prefix.
-
-
             );
         }
+
+    }
+
+    handleFavouriteChange = () => {
+        // var lang = this.dropdown.value;
+        let favour = !this.state.favourite;
+        this.props.appendFavouriteCity(favour);
+        // this.props.onSelectLanguage(lang);
+        this.setState({favourite: favour});
 
     }
 
@@ -48,6 +58,11 @@ export class Weather extends React.Component {
         return (
             <div className="glass">
                 <div className="weather">
+                    <button  className='favouriteBtn' style={ this.state.favourite ? {backgroundColor: "yellow"} : {backgroundColor: "transparent"}}
+                             onClick={this.handleFavouriteChange} >
+                        favourites</button>
+
+
                     {this.renderCityWeather(this.props.weatherData)}
                 </div>
             </div>

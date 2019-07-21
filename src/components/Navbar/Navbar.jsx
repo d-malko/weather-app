@@ -10,6 +10,7 @@ export class Navbar extends React.Component {
                 <div className="nav__search-form">
                     <SearchForm onSearch={this.props.onSearch}/>
                 </div>
+
                 <ul>
                     <li>
                         <Link to={"/"}>Home</Link>
