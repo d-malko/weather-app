@@ -1,28 +1,25 @@
 import React from 'react';
 import './Weather.scss';
-// import WeatherIcons from 'react-weathericons';
-// import { WiDaySunny } from 'weather-icons-react';
-import 'weather-icons/css/weather-icons.css'
+// import 'weather-icons/css/weather-icons.css'
 import weatherIcons from "./icons.js";
 
 export class Weather extends React.Component {
     constructor(props) {
         super(props);
-        console.log(props);
+
         this.state = {
-            weatherData: {},
-            cityName: "",
-            favourite: this.props.favourite
+            weatherData: "",
+            isFavourite: "",
+            cityName: ""
         };
         this.renderCityWeather = this.renderCityWeather.bind(this);
     }
 
-    renderCityWeather(weatherData) {
+    renderCityWeather() {
+        let weatherData = this.props.weatherData;
         let prefix = 'wi wi-';
         let weatherClass = "";
         if (weatherData && weatherData.weather) {
-            const cityName = weatherData.name;
-            // this.setState({cityName: cityName});
             const code = weatherData.weather[0].id;
             // / If we are not in the ranges mentioned above, add a day/night prefix.
             let icon = weatherIcons[code].icon;
@@ -32,6 +29,7 @@ export class Weather extends React.Component {
             let weatherClass = prefix + icon;
             return (
                 <div>
+
                     <i className={weatherClass}></i>
                     <h2> {weatherData.name}</h2>
                     <h2> {weatherData.main.temp}</h2>
@@ -46,26 +44,74 @@ export class Weather extends React.Component {
     }
 
     handleFavouriteChange = () => {
-        // var lang = this.dropdown.value;
-        let favour = !this.state.favourite;
+        let favour = !this.state.isFavourite;
         this.props.appendFavouriteCity(favour);
-        // this.props.onSelectLanguage(lang);
-        this.setState({favourite: favour});
+        this.setState({isFavourite: favour});
+    };
+    favouriteBtn() {
+        return {
 
+
+        }
     }
+
+    componentDidMount() {
+        this.setState({weatherData: this.props.weatherData});
+        this.setState({isFavourite: this.props.isFavourite})
+    }
+
 
     render() {
         return (
             <div className="glass">
                 <div className="weather">
-                    <button  className='favouriteBtn' style={ this.state.favourite ? {backgroundColor: "yellow"} : {backgroundColor: "transparent"}}
-                             onClick={this.handleFavouriteChange} >
-                        favourites</button>
+                    {this.renderCityWeather()}
+                    <button className='favouriteBtn'
+                            style={this.props.isFavourite ? {backgroundColor: "yellow"} : {backgroundColor: "transparent"}}
+                            onClick={this.handleFavouriteChange}>
+                        favourites
+                    </button>
 
-
-                    {this.renderCityWeather(this.props.weatherData)}
                 </div>
             </div>
         )
+
     }
 }
+
+
+
+//
+// <!DOCTYPE html>
+// <html>
+// <head>
+//     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+//         <style>
+//             .fa {
+//             font-size: 50px;
+//             cursor: pointer;
+//             user-select: none;
+//             color:yellow;
+//             background-color: yellow
+//         }
+//
+//         </style>
+// </head>
+// <body>
+//
+// <p>Click on the icon to toggle between thumbs-up and thumbs-down (like/dislike):</p>
+//
+// <i onclick="myFunction(this)" class="fa fa-star fa-star-o"></i>
+//
+//
+//
+// <script>
+//     function myFunction(x) {
+//     x.classList.toggle("fa-star-o");
+// }
+// </script>
+//
+// </body>
+// </html>
+//
+

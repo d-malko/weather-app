@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {useEffect} from "react";
 import Slider from "react-slick";
 import './FavouritesSlider.scss';
 import "slick-carousel/slick/slick.css";
@@ -10,27 +10,28 @@ export class FavouritesSlider extends React.Component {
         super(props);
         this.state = {
             currentSlide: 0,
-            slides: [
-            ]
-
+            slides: []
         };
+        this.renderSlider = this.renderSlider.bind(this)
     }
 
+    // localStorage.getItem('favourites')
 
-    onButtonClick = (key) => {
+    onButtonClick = (index) => {
         const {slides, currentSlide} = this.state;
-        for( let i = 0; i < slides.length; i++){
-            if ( slides[i].key === key) {
+        for (let i = 0; i < slides.length; i++) {
+            if (slides[i].key === index.key) {
                 slides.splice(i, 1);
             }
         }
 
-        // slides.splice(currentSlide, 1);
-        this.setState({slides});
+        // let cityName = this.setState({slides});
+        this.props.deleteSlide(index.name)
     };
 
     before = () => {
     };
+
 
     updateCurrentSlide = current => {
         this.setState({currentSlide: current});
@@ -41,26 +42,33 @@ export class FavouritesSlider extends React.Component {
     };
 
     renderSlide(index) {
-        return (
+        // debugger;
+        if (index) {
+            // console.log('Slide: ', index);
+            return (
+                <div className="slide" key={index}>
 
-            <div className="slide" key={index}>
-                <button onClick={() => this.onButtonClick(index.key)}>X</button>
-                <div>
+
+                    <button onClick={() => this.onButtonClick(index)}>X</button>
+                    <div>
                     <span>
-                        <img key={index.key} src={index.src}/>
+                        <img src={index.src} onClick={() => console.log('onCLICK:', index.name)} />
                         {index.name}
                         </span>
+                    </div>
                 </div>
-
-            </div>
-        );
+            );
+        } else {
+            return (<div className="slide" key={index}></div>)
+        }
     }
 
     renderSlider() {
-        const {slides} = this.state;
+
+        const slides = this.state.slides;
         let settings = {
             dots: true,
-            slidesToShow: 5,
+            slidesToShow: 4,
             beforeChange: this.before,
             afterChange: this.updateCurrentSlide,
             infinite: true,
@@ -70,29 +78,32 @@ export class FavouritesSlider extends React.Component {
             centerMode: true,
             // adaptiveHeight: true
         };
+        // console.log('Slider: ', this.state.slides);
+        if (slides !== 'undefined' && slides.length > 0) {
+            // debugger;
+            return (
+                <Slider {...settings}>
+                    {slides.map(s => this.renderSlide(s))}
+                </Slider>
+            );
+        }
 
-        return (
-
-            <Slider {...settings}>
-                {slides.map(s => this.renderSlide(s))}
-            </Slider>
-        );
     }
 
 
+    componentWillReceiveProps() {
+        this.setState({slides: this.props.favourites});
+    }
+
     render() {
-        const {slides, currentSlide} = this.state;
-        // console.log(slides, currentSlide);
-        if (!slides.length) return null;
-
+        const {currentSlide, slides} = this.state;
         return (
-                <div className="container">
-                    {slides.length > 0 ? this.renderSlider() : this.renderSlide(slides[0])}
-                </div>
-
-
+            <div className="container">
+                {slides.length > 0 ? this.renderSlider() : this.renderSlide(slides[0])}
+            </div>
         );
     }
 }
+
 
 // ReactDOM.render(<ReactSlickDemo />, document.getElementById("container"));

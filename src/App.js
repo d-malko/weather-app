@@ -6,22 +6,21 @@ import './styles/base.scss'
 
 import {Navbar} from "./components/Navbar";
 import {Home} from "./components/Home";
-import {FavouriteCity} from "./components/FavouriteCity";
-import {Search} from "./components/Search";
-import {Weather5days} from "./components/Weather5days";
+// import {FavouriteCity} from "./components/FavouriteCity";
+// import {Search} from "./components/Search";
 
 export default class App extends React.Component {
     constructor(props) {
         super(props);
-
     }
 
     searchHandler(value) {
-        // console.log(value)
+        console.log(value)
     }
 
     render() {
         return (<div className="App">
+
                 <Router>
                     <Navbar onSearch={this.searchHandler}/>
                     <Switch>

@@ -1,10 +1,11 @@
 import React from 'react';
 import queryString from 'query-string';
+import _ from "lodash";
 
 import {Background} from "../Background";
 import {Weather} from "../Weather";
-import {Request} from "../../request";
 
+import {Request} from "../../request";
 import {FavouritesSlider} from "../FavouritesSlider";
 import 'weather-icons/css/weather-icons.css'
 import './Home.scss'
@@ -18,6 +19,7 @@ export class Home extends React.Component {
 
         this.state = {
             weatherData: {},
+            forecastData: {},
             queryParam: "",
             cityPhotos: {},
             currentPage: 1,
@@ -26,55 +28,31 @@ export class Home extends React.Component {
             latitude: null,
             longitude: null,
             error: null,
-            favourites: [],
-            favourite: false,
+            isFavourite: false,
             currentCity: {
                 name: "",
-                smallImage: "",
+                src: "",
                 bigImage: ""
             },
-            slides: localStorage.getItem('slides') || [],
-            // slides: [
-            //     {
-            //         key: 0,
-            //         src: "http://placekitten.com/g/400/100",
-            //         name: "name1"
-            //     },
-            //     {
-            //         key: 1,
-            //         src: "http://placekitten.com/g/400/200",
-            //         name: "name2"
-            //     },
-            //     {
-            //         key: 2,
-            //         src: "http://placekitten.com/g/400/300",
-            //         name: "name2"
-            //     },
-            //     {
-            //         key: 3,
-            //         src: "http://placekitten.com/g/400/400",
-            //         name: "name3"
-            //     },
-            //     {
-            //         key: 4,
-            //         src: "http://placekitten.com/g/400/500",
-            //         name: "name4"
-            //     },
-            //     {
-            //         key: 5,
-            //         src: "http://placekitten.com/g/400/600",
-            //         name: "name5"
-            //     }
-            // ]
+            favourites: [],
         };
         this.searchHandler = this.searchHandler.bind(this);
-        // this.appendFavouriteCity = this.appendFavouriteCity.bind(this)
+        this.setWeather = this.setWeather.bind(this);
         this.favouriteHandle = this.favouriteHandle.bind(this);
-        this.fetchPhoto = this.fetchPhoto.bind(this)
+        this.fetchPhoto = this.fetchPhoto.bind(this);
+        this.setFavouriteState = this.setFavouriteState.bind(this);
+        this.deleteSlide = this.deleteSlide.bind(this);
+
+
     }
 
-    setWeather(weatherData) {
-        this.setState({weatherData})
+    setWeather(weatherData, type) {
+        if (type === 'weather') {
+            this.setState({weatherData})
+        } else if (type === 'forecast') {
+            this.setState({forecastData: weatherData})
+        }
+
     }
 
     setCityPhotos(cityPhotos) {
@@ -83,21 +61,26 @@ export class Home extends React.Component {
     }
 
 
-    fetchWeather() {
+    fetchWeather(type) {
         let queryParam = queryString.parse(this.props.location.search);
         let request = {};
+        let weatherData = {};
         if (undefined !== queryParam.name) {
-            request = new Request(`http://api.openweathermap.org/data/2.5/weather?q=${queryParam.name}&units=metric&APPID=${this.openWeatherAPIkey}`);
+
+            request = new Request(`http://api.openweathermap.org/data/2.5/${type}?q=${queryParam.name}&units=metric&APPID=${this.openWeatherAPIkey}`);
             if (request) {
                 request.get(undefined,
                     (weatherDataJSON) => {
+                        weatherData = JSON.parse(weatherDataJSON);
 
-                        const weatherData = JSON.parse(weatherDataJSON);
-                        if (weatherData.cod === 200) {
-                            this.setWeather(weatherData);
-                            this.updateCurrentCity('name', weatherData.name);
-                            this.fetchPhoto(weatherData.name);
-                        }
+                        if (weatherData.cod === 200 || weatherData.cod === "200" ) {
+                            this.setWeather(weatherData, type);
+                            if (type === 'weather'){
+                                this.updateCurrentCity('name', weatherData.name);
+                                this.fetchPhoto(weatherData.name);
+                                this.setFavouriteState(weatherData.name)
+                            }
+                            }
                     },
                     (e) => {
                         console.log(e);
@@ -105,7 +88,7 @@ export class Home extends React.Component {
                     {})
             }
         } else if (undefined !== queryParam.coordinates) {
-            this.fetchWeatherByCoordinates();
+            return this.fetchWeatherByCoordinates();
         }
     }
 
@@ -128,6 +111,7 @@ export class Home extends React.Component {
                                         this.setWeather(weatherData);
                                         this.updateCurrentCity('name', weatherData.name);
                                         this.fetchPhoto(weatherData.name);
+                                        this.setFavouriteState(weatherData.name);
                                     }
                                 },
                                 (e) => {
@@ -146,7 +130,6 @@ export class Home extends React.Component {
                 distanceFilter: 5
             }
         );
-
     }
 
     fetchPhoto(cityName) {
@@ -155,7 +138,7 @@ export class Home extends React.Component {
             (cityPhotosJSON) => {
                 const cityPhotos = JSON.parse(cityPhotosJSON) || {};
                 this.setCityPhotos(cityPhotos);
-                this.updateCurrentCity("smallImage", cityPhotos.results[0].urls.thumb);
+                this.updateCurrentCity("src", cityPhotos.results[0].urls.thumb);
                 // debugger;
             },
             (e) => {
@@ -164,11 +147,27 @@ export class Home extends React.Component {
             {})
     }
 
+    setFavouriteState() {
+        // console.log('setFavouriteState', this.state)
+        if (_.find(this.state.favourites, {name: this.state.currentCity.name})) {
+            this.setState({isFavourite: true});
+
+        }
+    }
+
     componentDidMount() {
-            {slides: }
-        this.setState(
-        console.log("-->>" + this.state.slides, localStorage.getItem('slides'));
-        this.fetchWeather();
+
+        if (localStorage.getItem(('favourites'))) {
+
+            const favourites = JSON.parse(localStorage.getItem('favourites'));
+            this.setState(
+                {favourites: [...favourites]});
+            // console.log('start');
+            this.fetchWeather('weather');
+            this.fetchWeather('forecast');
+            // console.log('after fetchWeather');
+            this.setFavouriteState()
+        }
     }
 
     searchHandler(weatherData) {
@@ -177,56 +176,87 @@ export class Home extends React.Component {
 
 
     favouriteHandle(favourValue) {
-        this.setState({favourite: favourValue});
-        const cityName = this.state.cityName;
-        let favourites = [...this.state.favourites];
+        this.setState({isFavourite: favourValue});
+        const cityName = this.state.weatherData.name;
+        let favourites = this.state.favourites;
         if (favourValue) {
+            if (!_.find(favourites, {name: cityName})) {
+                favourites.push(this.state.currentCity);
+                this.setState(
+                    {favourites: [...favourites]},
+                    () => {
+                        localStorage.setItem('favourites', JSON.stringify(favourites))
+                    }
+                )
+            }
 
-            favourites.push(this.state.cityName);
-            this.setState({favourites});
-            localStorage.setItem('series', this.state.slides)
         } else {
-            // debugger;
-            favourites = favourites.filter(function (e) {
-                return e !== cityName
+            _.remove(favourites, function (e) {
+                return e.name === cityName;
             });
-            this.setState({favourites})
+            // debugger
+            this.setState(
+                {favourites: [...favourites]},
+                () => {
+                    localStorage.setItem('favourites', JSON.stringify(favourites))
+                }
+            );
         }
 
-        // console.log("favourites: " + this.state.favourites)
     };
-    updateCurrentCity(key, value){
+
+    updateCurrentCity(key, value) {
         this.setState(prevState => {
-            let currentCity = Object.assign({}, prevState.currentCity);  // creating copy of state variable jasper
-            currentCity[key] = value;                     // update the name property, assign a new value
-            return { currentCity };                                 // return new object jasper object
+            let currentCity = Object.assign({}, prevState.currentCity);
+            currentCity[key] = value;
+            return {currentCity};
         });
-        console.log( this.state.currentCity)
+        // console.log(this.state.currentCity)
     }
+
+    deleteSlide(cityName) {
+        let favourites = this.state.favourites;
+        _.remove(favourites, function (e) {
+            return e.name === cityName;
+        });
+        this.setState(
+            {favourites: [...favourites]},
+            () => {
+                localStorage.setItem('favourites', JSON.stringify(favourites))
+            }
+        )
+    }
+
     render() {
         let weatherParam = {
             weatherData: this.state.weatherData,
-            favourite: false,
+            isFavourite: this.state.isFavourite,
             appendFavouriteCity: this.favouriteHandle
         };
+        let forecastParam = {
+            weatherData: this.state.weatherData,
+            isFavourite: this.state.isFavourite,
+            appendFavouriteCity: this.favouriteHandle
+        };
+        // console.log("render.param-->>", weatherParam);
+        console.log("render.state-->>", this.state);
+        let slidesParam = {
+            deleteSlide: this.deleteSlide,
+            favourites: this.state.favourites
+        };
+        // console.log("HOME.slides.param-->>", slidesParam);
         return (
             <div className="App">
                 <div className='main'>
 
                     <Background images={this.state.cityPhotos}/>
                     <Weather {...weatherParam}/>
-                    <FavouritesSlider {...this.state.slides}/>
+                    {/*<Weather5days {...forecastParam}/>*/}
+                    <FavouritesSlider {...slidesParam}/>
 
                 </div>
             </div>
         );
+
     }
 }
-
-//
-// export default function DisplayButton(props) {
-//     // It takes in props, props are anything you want to pass down in this case the click event handler that we named handleClick
-//     return(
-//         <button type="button" onClick={props.handleClick.bind(this)} className="toggleDislpayButton"> Display </button>
-//     );
-// };
