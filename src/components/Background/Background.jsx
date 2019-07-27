@@ -20,8 +20,9 @@ export class Background extends React.Component {
     }
 
 
-    fetchPhoto(cityName) {
+    fetchPhoto() {
         // console.log('fetchPhoto: ', cityName);
+        let cityName = this.state.cityName;
         const request = new Request(`https://api.unsplash.com/search/photos?page=1&query=${cityName}&per_page=5&client_id=${this.unsplashAPIkey}`);
         // console.log('Request', request);
         request.get(undefined,
@@ -37,14 +38,22 @@ export class Background extends React.Component {
     }
 
     componentWillReceiveProps(nextProps, nextContext) {
-        // console.log('Background:', nextProps.cityName);
-        if (nextProps.cityName !== this.props.cityName && nextProps.cityName !== 'coordinates') {
-            this.setState({'cityName': nextProps.cityName}, this.fetchPhoto(nextProps.cityName) )
+        console.log('Background: receive props', nextProps.cityName);
+        console.log('Background: receive props', this.state.cityName);
+        if (nextProps.cityName !== this.state.cityName && nextProps.cityName !== 'coordinates') {
+                // debugger
+            this.setState( state => {
+                return {...state, 'cityName': nextProps.cityName}
+                }
+                , this.fetchPhoto)
+            this.setState({'cityName': nextProps.cityName}, this.fetchPhoto)
 
         }
     }
 
     renderList() {
+        console.log("BACKGRND: render", this.props)
+        console.log("BACKGRND: render", this.state)
         let images = this.state.cityPhotos;
         // console.log('renderlist images: ', images);
         if (images.length > 0) {
@@ -62,6 +71,8 @@ export class Background extends React.Component {
     }
 
     render() {
+        console.log("BACKGRND: render", this.props)
+        console.log("BACKGRND: render", this.state)
         return (
             <div className="background">
                 {this.renderList(this.props.cityName)}

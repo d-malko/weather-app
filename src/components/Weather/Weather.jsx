@@ -4,6 +4,7 @@ import './Weather.scss';
 import weatherIcons from "./icons.js";
 import queryString from "query-string";
 import {Request} from "../../request";
+import {Redirect} from "react-router-dom";
 
 export class Weather extends React.Component {
     constructor(props) {
@@ -37,7 +38,7 @@ export class Weather extends React.Component {
         let weatherData = {};
         console.log("WEATHER: QUERY city name: ", cityName);
         console.log(this.state);
-        if (cityName !== undefined && cityName !== "coordinates" && cityName !== "" && type !== undefined) {
+        if (cityName !== undefined && cityName !== "Coordinates" && cityName !== "" && type !== undefined) {
             console.log("WEATHER: BY NAME");
             request = new Request(`http://api.openweathermap.org/data/2.5/${type}?q=${cityName}&units=metric&APPID=${this.openWeatherAPIkey}`)
             console.log("WEATHER: request name: ", `http://api.openweathermap.org/data/2.5/${type}?q=${cityName}&units=metric&APPID=${this.openWeatherAPIkey}`)
@@ -47,16 +48,19 @@ export class Weather extends React.Component {
                         weatherData = JSON.parse(weatherDataJSON);
                         if (weatherData.cod === 200 || weatherData.cod === "200") {
                             this.setWeather(weatherData, type);
-                            if (type === 'weather') {
+                            // if (type === 'weather') {
                                 // this.props.updateCurrentCity('name', weatherData.name);
-                                this.props.setFavouriteState(cityName)
-                            }
-                            // } else {
-                            //     this.fetchWeatherByCoordinates(type);
+                                // this.props.setFavouriteState(cityName)
+                            // }
+                        } else if (weatherData.cod === 404 || weatherData.cod === "404") {
+                            console.log(weatherData.cod)
+                            return (
+                                <Redirect to={`/404}`}/>
+                                )
                         }
                     },
                     (e) => {
-                        console.log(e);
+                        console.log("Weather: ", e);
                     },
                     {})
             }
@@ -91,12 +95,17 @@ export class Weather extends React.Component {
                                             console.log("WEATHER: fetchWeathercoord:", this.state);
                                             console.log("WEATHER: fetchWeathercoord:", weatherData);
                                             if (type === 'weather') {
-                                                this.setState({'cityName': weatherData.name}, this.props.updateCurrentCity('name', weatherData.name));
+                                                this.setState({'cityName': weatherData.name}, this.setCityName);
                                                 // debugger
                                                 // this.props.updateCurrentCity('name', weatherData.name);
                                                 // this.fetchPhoto(weatherData.name);
                                                 // this.props.setFavouriteState(weatherData.name)
                                             }
+                                        } else if (weatherData.cod === 404 || weatherData.cod === "404") {
+                                            console.log(weatherData.cod)
+                                            return (
+                                                <Redirect to={`/404}`}/>
+                                            )
                                         }
                                     },
                                     (e) => {
@@ -130,6 +139,7 @@ export class Weather extends React.Component {
         let weatherData = this.state.weatherData;
         let prefix = 'wi wi-';
         // let weatherClass = "";
+        console.log("WEATHER: rendercityWeather", this.props);
         if (weatherData && weatherData.weather) {
             const code = weatherData.weather[0].id;
             // / If we are not in the ranges mentioned above, add a day/night prefix.
@@ -150,29 +160,32 @@ export class Weather extends React.Component {
                     <h2> {weatherData.main.humidity}</h2>
                 </div>
             );
-        }
+        } else {this.cityNameUpdated(this.props.currentCity.name)}
 
     }
 
 
     handleFavouriteToggle = () => {
-        let favour = !this.state.isFavourite;
-        this.props.appendFavouriteCity(favour);
-        this.setState({isFavourite: favour});
+        let isFavourite = !this.state.isFavourite;
+        this.props.appendFavouriteCity(isFavourite);
+        this.setState({isFavourite});
     };
 
     // callbackFetchWeather(type) {
     //     return this.fetchWeather(type)
     // };
+    setCityName =() => {
+        this.props.updateCurrentCity('name', this.state.cityName)
+    };
 
     cityNameUpdated = (cityName) => {
         console.log("WEATHER: cityname", cityName);
-        if (cityName !== this.state.cityName && cityName !== 'coordinates') {
+        if (cityName !== this.state.cityName && cityName !== 'Coordinates') {
             // callback working immiditialy not after set state
             console.log("WEATHER:Receive props name", cityName, this.state.cityName)
             // this.setState({cityName}, this.callbackFetchWeather(this.props.type))  //TODO check use state or props for type
             this.setState({cityName})  //TODO check use state or props for type
-        } else if (cityName !== this.state.cityName && cityName === 'coordinates') {
+        } else if (cityName !== this.state.cityName && cityName === 'Coordinates') {
             console.log("WEATHER: Receive props coordinates", cityName, this.state.cityName)
             this.fetchWeatherByCoordinates(this.props.type);
         }
@@ -191,7 +204,7 @@ export class Weather extends React.Component {
         // this.fetchWeather(this.props.type)
         console.log("WEATHER: receive props", nextProps, this.props)
         console.log("WEATHER: will update state", nextState, this.state)
-        if (nextState.cityName === 'coordinates') {
+        if (nextState.cityName === 'Coordinates') {
             this.fetchWeatherByCoordinates(this.props.type)
         } else if (nextState.cityName !== this.state.cityName) {
             this.fetchWeather(nextState.cityName, this.props.type)
@@ -199,6 +212,7 @@ export class Weather extends React.Component {
     }
 
     render() {
+        console.log("WEATHER: render", this.props)
         return (
             <div className="glass">
                 <div className="weather">

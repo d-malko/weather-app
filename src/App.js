@@ -30,9 +30,6 @@ export default class App extends React.Component {
                         }}
                         />
                         <Route path="/:queryString" component={Home}/>
-                        {/*<Route path="/search/:queryString" component={Search}/>*/}
-                        {/*<Route path="/weather5days/:queryString" component={Weather5days}/>*/}
-                        {/*<Route path="/favourite-city/:queryString" component={FavouriteCity}/>*/}
                         <Route path="/404" component={() => <h2>Not found!</h2>}/>
                         <Redirect to="/404"/>
                     </Switch>

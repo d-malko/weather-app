@@ -67,7 +67,7 @@ export class FavouritesSlider extends React.Component {
 
     renderSlider() {
 
-        const slides = this.state.slides;
+        const slides = this.props.slides;
         let settings = {
             dots: true,
             slidesToShow: 4,
@@ -96,7 +96,10 @@ export class FavouritesSlider extends React.Component {
     }
 
     render() {
-        const {currentSlide, slides} = this.state;
+        console.log("SLIDER render state:", this.state)
+        console.log("SLIDER render props:", this.props)
+        // if (this.props.)
+        const slides = this.props.slides;
         return (
             <div className="container">
                 {slides.length > 0 ? this.renderSlider() : this.renderSlide(slides[0])}
