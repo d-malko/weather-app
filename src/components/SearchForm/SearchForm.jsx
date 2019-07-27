@@ -16,7 +16,8 @@ class SearchForm extends React.Component {
 
     submitForm(e) {
         e.preventDefault();
-        this.props.history.push(`/main?name=${this.state.searchValue}`)
+        this.props.history.push(`/?name=${this.state.searchValue}`)
+
     }
 
     onChange(e) {

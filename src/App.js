@@ -1,5 +1,5 @@
 import React from 'react';
-import {HashRouter as Router, Route, Switch, Redirect} from 'react-router-dom';
+import {BrowserRouter as Router, Route, Switch, Redirect} from 'react-router-dom';
 
 import './App.css';
 import './styles/base.scss'
@@ -15,7 +15,7 @@ export default class App extends React.Component {
     }
 
     searchHandler(value) {
-        console.log(value)
+        // console.log(value)
     }
 
     render() {
@@ -24,15 +24,15 @@ export default class App extends React.Component {
                 <Router>
                     <Navbar onSearch={this.searchHandler}/>
                     <Switch>
-                        <Route path="/main" component={Home}/>
-                        {/*<Route exact={true} path="/main/:queryString" component={Home}/>*/}
-                        {/*<Route path="/search/:queryString" component={Search}/>*/}
-                        {/*<Route path="/weather5days/:queryString" component={Weather5days}/>*/}
-                        {/*<Route path="/favourite-city/:queryString" component={FavouriteCity}/>*/}
+                        <Route exact={true} path="/" component={Home}/>
                         <Route path="/about" component={() => {
                             return <h2>About page</h2>
                         }}
                         />
+                        <Route path="/:queryString" component={Home}/>
+                        {/*<Route path="/search/:queryString" component={Search}/>*/}
+                        {/*<Route path="/weather5days/:queryString" component={Weather5days}/>*/}
+                        {/*<Route path="/favourite-city/:queryString" component={FavouriteCity}/>*/}
                         <Route path="/404" component={() => <h2>Not found!</h2>}/>
                         <Redirect to="/404"/>
                     </Switch>

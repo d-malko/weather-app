@@ -1,4 +1,5 @@
-import React, {useEffect} from "react";
+import * as  React from "react";
+import {Redirect, Link} from "react-router-dom";
 import Slider from "react-slick";
 import './FavouritesSlider.scss';
 import "slick-carousel/slick/slick.css";
@@ -15,8 +16,6 @@ export class FavouritesSlider extends React.Component {
         this.renderSlider = this.renderSlider.bind(this)
     }
 
-    // localStorage.getItem('favourites')
-
     onButtonClick = (index) => {
         const {slides, currentSlide} = this.state;
         for (let i = 0; i < slides.length; i++) {
@@ -25,13 +24,11 @@ export class FavouritesSlider extends React.Component {
             }
         }
 
-        // let cityName = this.setState({slides});
         this.props.deleteSlide(index.name)
     };
 
     before = () => {
     };
-
 
     updateCurrentSlide = current => {
         this.setState({currentSlide: current});
@@ -41,18 +38,23 @@ export class FavouritesSlider extends React.Component {
         this.setState({currentSlide: current});
     };
 
+    routeChange() {
+        let path = `newPath`;
+        this.props.history.push(path);
+    }
+
     renderSlide(index) {
-        // debugger;
         if (index) {
-            // console.log('Slide: ', index);
             return (
                 <div className="slide" key={index}>
-
-
                     <button onClick={() => this.onButtonClick(index)}>X</button>
                     <div>
                     <span>
-                        <img src={index.src} onClick={() => console.log('onCLICK:', index.name)} />
+                        <Link to={`/?name=${index.name}`}>
+                            <img alt="" src={index.smallImage}/>
+                        </Link>
+                        {/*<img alt="" src={index.src} onClick={() => <Redirect to={`/?name=${index.name}`}/>}/>*/}
+                        {/*<img alt="" src={index.src} onClick={() => console.log(`/?name=${index.name}`)}/>*/}
                         {index.name}
                         </span>
                     </div>
@@ -80,7 +82,6 @@ export class FavouritesSlider extends React.Component {
         };
         // console.log('Slider: ', this.state.slides);
         if (slides !== 'undefined' && slides.length > 0) {
-            // debugger;
             return (
                 <Slider {...settings}>
                     {slides.map(s => this.renderSlide(s))}
@@ -89,7 +90,6 @@ export class FavouritesSlider extends React.Component {
         }
 
     }
-
 
     componentWillReceiveProps() {
         this.setState({slides: this.props.favourites});
@@ -104,6 +104,3 @@ export class FavouritesSlider extends React.Component {
         );
     }
 }
-
-
-// ReactDOM.render(<ReactSlickDemo />, document.getElementById("container"));
