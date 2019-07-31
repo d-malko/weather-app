@@ -1,8 +1,6 @@
 import React from 'react';
 import './Weather.scss';
-// import 'weather-icons/css/weather-icons.css'
 import weatherIcons from "./icons.js";
-import queryString from "query-string";
 import {Request} from "../../request";
 import {Redirect} from "react-router-dom";
 
@@ -49,14 +47,14 @@ export class Weather extends React.Component {
                         if (weatherData.cod === 200 || weatherData.cod === "200") {
                             this.setWeather(weatherData, type);
                             // if (type === 'weather') {
-                                // this.props.updateCurrentCity('name', weatherData.name);
-                                // this.props.setFavouriteState(cityName)
+                            // this.props.updateCurrentCity('name', weatherData.name);
+                            // this.props.setFavouriteState(cityName)
                             // }
                         } else if (weatherData.cod === 404 || weatherData.cod === "404") {
                             console.log(weatherData.cod)
                             return (
                                 <Redirect to={`/404}`}/>
-                                )
+                            )
                         }
                     },
                     (e) => {
@@ -149,18 +147,22 @@ export class Weather extends React.Component {
             }
             let weatherClass = prefix + icon;
             return (
-                <div>
-
+                <div className='weather-container'>
                     <i className={weatherClass}></i>
-                    <h2> {weatherData.name}</h2>
-                    <h2> {weatherData.main.temp}</h2>
-                    <h2> {weatherData.main.pressure}</h2>
-                    <h2> {weatherData.main.grnd_level}</h2>
-                    <h2> {weatherData.main.sea_level}</h2>
-                    <h2> {weatherData.main.humidity}</h2>
+                    <div className='weather-text'>
+                        <div className='weather-header'> {weatherData.name}</div>
+                        <ul>
+                            {weatherData.main.temp > 0 ? <li> Температура {Math.floor(weatherData.main.temp)} &deg;C</li> : <li/>}
+                            {weatherData.main.pressure >0 ? <li>Давление {weatherData.main.pressure}</li> : <li/>}
+                            {weatherData.main.sea_level > 0 ? <li>Уровень моря {weatherData.main.sea_level}</li> : <li/> }
+                            <li>Влажность {weatherData.main.humidity}</li>
+                        </ul>
+                    </div>
                 </div>
             );
-        } else {this.cityNameUpdated(this.props.currentCity.name)}
+        } else {
+            this.cityNameUpdated(this.props.currentCity.name)
+        }
 
     }
 
@@ -174,7 +176,7 @@ export class Weather extends React.Component {
     // callbackFetchWeather(type) {
     //     return this.fetchWeather(type)
     // };
-    setCityName =() => {
+    setCityName = () => {
         this.props.updateCurrentCity('name', this.state.cityName)
     };
 
@@ -212,20 +214,21 @@ export class Weather extends React.Component {
     }
 
     render() {
-        console.log("WEATHER: render", this.props)
+        console.log("WEATHER: render", this.props);
+        let classFavourite = this.props.isFavourite ?  "plus__activated": "plus";
+        // debugger
         return (
-            <div className="glass">
-                <div className="weather">
-                    {this.renderCityWeather()}
-                    <button className='favouriteBtn'
-                            style={this.props.isFavourite ? {backgroundColor: "yellow"} : {backgroundColor: "transparent"}}
-                            onClick={this.handleFavouriteToggle}>
-                        favourites
-                    </button>
 
-                </div>
+            <div className="weather">
+                {this.renderCityWeather()}
+                {/*    <h2>Hover me </h2>*/}
+                    <button className={classFavourite} onClick={this.handleFavouriteToggle}></button>
+                {/*<button className={classFavourite}*/}
+                {/*        onClick={this.handleFavouriteToggle}>*/}
+                {/*</button>*/}
             </div>
         )
-
     }
 }
+
+// style={this.props.isFavourite ? {backgroundColor: "yellow"} : {backgroundColor: "transparent"}}

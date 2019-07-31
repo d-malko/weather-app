@@ -20,8 +20,12 @@
   &__search-form {
     width: 30%;
     max-width: 500px;
-    display: flex;
+    //display: flex;
     align-items: center;
-    z-index: 1;
   }
 }
+//.nav__search-form > ul > li:nth-child(1) > a > img {
+//  height: 100%;
+//  border: 1px solid red;
+//  background-color: red;
+//}

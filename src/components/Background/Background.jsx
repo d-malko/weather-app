@@ -2,6 +2,7 @@ import React from 'react';
 import './Background.scss';
 import './demo.scss'
 import {Request} from "../../request";
+import {Redirect} from "react-router-dom";
 
 
 export class Background extends React.Component {
@@ -28,8 +29,12 @@ export class Background extends React.Component {
         request.get(undefined,
             (cityPhotosJSON) => {
                 const cityPhotos = JSON.parse(cityPhotosJSON) || {};
+                console.log("BACKGROUND", cityPhotos);
+                if (cityPhotos.total > 0 ) {
                 this.setCityPhotos(cityPhotos.results);
                 this.props.updateCurrentCity("smallImage", cityPhotos.results[0].urls.thumb);
+                } else {return (
+                    <Redirect to={`/404}`}/>)}
             },
             (e) => {
                 console.log(e);

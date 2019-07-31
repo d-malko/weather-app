@@ -92,7 +92,7 @@ export class FavouritesSlider extends React.Component {
     }
 
     componentWillReceiveProps() {
-        this.setState({slides: this.props.favourites});
+        this.setState({slides: this.props.slides});
     }
 
     render() {

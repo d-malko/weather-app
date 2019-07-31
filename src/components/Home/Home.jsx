@@ -8,8 +8,14 @@ import {Weather} from "../Weather";
 //
 // import {Request} from "../../request";
 import {FavouritesSlider} from "../FavouritesSlider";
+import {Forecast} from "../Forecast";
+
+// import {ForecastHourly} from '../../components/ForecastHourly';
+// import {ForecastDaily } from '../../components/ForecastDaily';
+// import {Navigation} from '../../components/Navigation';
 import 'weather-icons/css/weather-icons.css'
 import './Home.scss'
+import { Spinner} from "../Spinner";
 
 export class Home extends React.Component {
     constructor(props) {
@@ -51,7 +57,7 @@ export class Home extends React.Component {
     };
 
     freeze() {
-        setTimeout(this.checkFavouriteState, 1000)
+        setTimeout(this.checkFavouriteState, 2500)
     }
 
 
@@ -140,11 +146,12 @@ export class Home extends React.Component {
     }
 
     deleteSlide(cityName) {
-        debugger
+        // debugger
         let favourites = this.state.favourites;
-        _.remove(favourites, function (e) {
-            return e.name === cityName;
-        });
+        favourites = favourites.filter(obj => obj.name !== cityName);
+        // _.remove(favourites, function (e) {
+        //     return e.name === cityName;
+        // });
         this.setState(
             {favourites: [...favourites]},
             () => {
@@ -162,9 +169,6 @@ export class Home extends React.Component {
             cityName = 'Coordinates'
         }
         this.updateCurrentCity('name', cityName);
-
-
-        // this.setFavouriteState()
     }
 
     componentWillReceiveProps(nextProps, nextContext) {
@@ -177,13 +181,6 @@ export class Home extends React.Component {
         this.updateCurrentCity('name', cityName);
         // this.setFavouriteState()
     }
-
-    //
-    // componentWillUpdate(nextProps, nextState, nextContext) {
-    //     if (nextState.uploadFavourite !== this.state.uploadFavourite) {  // TODO how to avoid this checking and run func on state change
-    //         this.forceUpdate()
-    //     }
-    // }
 
 
     render() {
@@ -216,65 +213,28 @@ export class Home extends React.Component {
             deleteSlide: this.deleteSlide,
             slides: this.state.favourites
         };
-        // console.log("HOME.slides.param-->>", slidesParam);
-        // if (this.state.uploadFavourite === true) {
 
         return (
 
-            <div className="App">
-                <div className='main'>
-                    <Background {...backgroundParam}/>
-                    {this.state.uploadFavourite === true
-                        ? <Weather {...weatherParam}/>
-                          // <Forecast {...forecastParam}/>
-                        : <div className="glass">
-                            <div className="lds-ripple">
-                                <div></div>
-                                <div></div>
-
+            <div className='main'>
+                <Background {...backgroundParam}/>
+                {this.state.uploadFavourite === true
+                    ? <div className="glass"> <Weather {...weatherParam}/>
+                        <section className="forecasts">
+                            <div className="forecasts__scroll-panel swiper-container">
+                                <div className="swiper-wrapper">
+                                    <Forecast cityName={ this.state.cityName }/>
+                                </div>
                             </div>
-                        </div>}
-
-                    <FavouritesSlider {...slidesParam}/>
-
+                            {/*<Navigation currentForecast={this.state.currentForecast}/>*/}
+                        </section>
                 </div>
+
+                        : <Spinner/>}
+                {this.state.uploadFavourite === true ? <FavouritesSlider {...slidesParam}/>: <div/>}
+
+
             </div>
         );
-        // } else {
-        //     return (<div className="lds-ripple">
-        //         {/*<div></div>*/}
-        //         {/*<div></div>*/}
-        // </div>)
     }
-
-
 }
-
-// }
-
-
-// deleteSlide(cityName) {
-//     let favourites = this.state.favourites;
-//     _.remove(favourites, function (e) {
-//         return e.name === cityName;
-//     });
-//     this.setState(
-//         {favourites: [...favourites]},
-//         () => {
-//             localStorage.setItem('favourites', JSON.stringify(favourites))
-//         }
-//     )
-// }
-
-
-// () => {
-// this.setState({uploadFavourite: true},
-// , () => {
-// (
-// this.setFavouriteState()
-// )();
-// (
-//     ()=> {console.log("HOME: AFTER set favourites", this.state.favourites, favourites)}
-// )()
-// })
-// })

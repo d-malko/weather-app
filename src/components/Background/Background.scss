@@ -1,4 +1,7 @@
-
+.background {
+  display: flex;
+  z-index: 0;
+}
 .cb-slideshow,
 .cb-slideshow:after {
   position: fixed;

@@ -2,6 +2,9 @@ import React from 'react';
 import './Navbar.scss';
 import {Link} from "react-router-dom";
 import {SearchForm} from "../SearchForm";
+import ForecastHourly from '../../components/ForecastHourly';
+import ForecastDaily from '../../components/ForecastDaily';
+import Navigation from '../../components/Navigation';
 
 export class Navbar extends React.Component {
     render() {
@@ -13,11 +16,11 @@ export class Navbar extends React.Component {
 
                 <ul>
                     <li>
-                        <Link to={"/"}>Home</Link>
+                        <Link to={"/"}><img alt='Home' src={require('../../images/gps.png')} style={{height: '40px'}}/></Link>
                     </li>
-                    <li>
-                        <Link to={"/about"}>About</Link>
-                    </li>
+                    {/*<li>*/}
+                    {/*    <Link to={"/about"}>About</Link>*/}
+                    {/*</li>*/}
                 </ul>
             </div>
         </nav>
